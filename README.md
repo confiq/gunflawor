@@ -35,10 +35,10 @@ There should be metrics of checks like this
 
 | Type of load  | Gunicorn sync worker  | Gunicorn async worker | gevent.wsgi |
 | ------------- | --------------------- | --------------------- | ----------- |
-| CPU       | X | X | X | X |
-| Memory    | X | X | X | X |
-| sleep(2)  | X | X | X | X |
-| slow API  | X | X | X | X |
+| CPU       | 🔢  | 🔢 | 🔢  | 🔢 |
+| Memory    | 🔢  | 🔢 | 🔢  | 🔢 |
+| sleep(2)  | 🔢  | 🔢 | 🔢  | 🔢 |
+| slow API  | 🔢  | 🔢 | 🔢  | 🔢 |
 
 
 How to check?
