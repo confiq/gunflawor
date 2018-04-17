@@ -25,10 +25,20 @@ Workers:
 
 Types of load:
 
-1) Big CPU
-2) Big Memory
+1) CPU
+2) Memory
 3) sleep(2)
 4) slow external web page (slow API)
+
+
+There should be metrics of checks like this
+
+| Type of load  | Gunicorn sync worker  | Gunicorn async worker | gevent.wsgi |
+| ------------- | --------------------- | --------------------- | ----------- |
+| CPU       | X | X | X | X |
+| Memory    | X | X | X | X |
+| sleep(2)  | X | X | X | X |
+| slow API  | X | X | X | X |
 
 
 How to check?
