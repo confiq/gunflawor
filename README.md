@@ -33,12 +33,12 @@ Types of load:
 
 There should be metrics of checks like this
 
-| Type of load  | Gunicorn sync worker  | Gunicorn async worker | gevent.wsgi |
-| ------------- | --------------------- | --------------------- | ----------- |
-| CPU       | 🔢  | 🔢 | 🔢  | 🔢 |
-| Memory    | 🔢  | 🔢 | 🔢  | 🔢 |
-| sleep(2)  | 🔢  | 🔢 | 🔢  | 🔢 |
-| slow API  | 🔢  | 🔢 | 🔢  | 🔢 |
+| Type of load  | sync  | eventlet | gevent |
+| ------------- | ----- | -------- | ------ |
+| CPU           | 🔢  | 🔢 | 🔢  | 🔢 |
+| Memory        | 🔢  | 🔢 | 🔢  | 🔢 |
+| sleep(2)      | 🔢  | 🔢 | 🔢  | 🔢 |
+| slow API      | 🔢  | 🔢 | 🔢  | 🔢 |
 
 
 How to check?
