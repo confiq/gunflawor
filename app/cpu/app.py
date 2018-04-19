@@ -1,4 +1,5 @@
-#TODO
+# coding=utf-8
+# so this should look something like this: $ gunicorn --workers=2 app:cpu:app:app ¯\_(ツ)_/¯
 
 def app(environ, start_response):
     """Simplest possible application object"""
