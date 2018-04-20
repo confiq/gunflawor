@@ -1,23 +1,10 @@
 import docker
 
 
-class DockerHelper(object):
-    def __init__(self):
-        pass
-
-    def run(self, command):
-        return 'TODO'
-
-    def stop(self, container_id):
-        return 'TODO'
-
-    def get_client(self):
-        return docker.from_env()
-
-
 class benchmark(object):
     GUNICORN_WORKERS = 5
     LOADS = {
+        'normal':   '',
         'cpu':      '',
         'memory':   '',
         'sleep':    '',
@@ -32,19 +19,21 @@ class benchmark(object):
     ]
     def __init__(self):
         self.results = {}
+        self.docker_client = docker.from_env()
         self.main()
 
     def main(self):
         for worker in self.TYPE_OF_WORKERS:
             self.results[worker] = {}
             for load in self.LOADS:
-                container_id = DockerHelper.run()
+                container = self.docker_client.containers.run('pwd', detach=True)
                 result = self.stress_test()
-                DockerHelper.stop(container_id)
+                container.stop()
                 self.results[worker].update({load: result})
 
     def stress_test(self):
-        pass
+        # TODO: We might use locust or Hey (in Go) but it's definitely
+        return 100
 
 
 if __name__ == "__main__":
