@@ -35,7 +35,9 @@ class benchmark(object):
                            load=load, worker_class=worker_class)
                 container = self.docker_client.containers.run(self.DOCKER_IMAGE, run_string, detach=True)
                 logging.debug('Running docker with command: {}'.format(run_string))
+                # TODO: check if docker is still running and did not failed to run gunicorn
                 result = self.stress_test()
+                # TODO: print last few lines from docker and also check if it's still alive
                 container.stop()
                 self.results[worker_class].update({load: result})
 
