@@ -22,7 +22,7 @@ cause the utilisation of resourses will be same when sync/async
 
 
 
-How to measure it?
+# How to measure it?
 
 Lets first check what type of workers we have and what types of load we have
 
@@ -50,7 +50,7 @@ There should be metrics of checks like this
 | slow API      | 🔢  | 🔢 | 🔢  | 🔢 |
 
 
-How to check?
+# How to check?
 
 We need metric tfor this. I'm thinking about the following:
 
