@@ -1,27 +1,36 @@
 # gunflawor
-Stats for Gunicorn and flask with workers
+
+## WORK IN PROGRESS
+Please notice that this is still work in process, so all this text is about what/how this software SHOULD look
+
+# What is it?
+
+Stats for Gunicorn and flask with workers types
 
 Gunicorn has few workers types that you can use for your app.
 
 It's been argued what type of the worker is best for your environment so we are trying to make some answer to the following questions:
 
-All tests are c5.xlarge with 4 vCPU
 
-Myths:
-1) It's not crucial what worker type you have when you have big CPU/Mem load
-2) Async worker might help when you have slow external load but not that much (graphs will illustrate)
-3) will gevent.wsgi perform better then gunicorn.workers.ggevent on flask?
+Questions:
+1) What type of worker I should use for my app? 
+1) It's not crucial what worker type you have when you have big CPU/Mem load 
+cause the utilisation of resourses will be same when sync/async
+  
+1) Async worker might help when you have slow external load but not that much
+1) will gevent.wsgi perform better then gunicorn.workers.ggevent on flask?
 
 
 
-How to mesure it?
+How to measure it?
 
 Lets first check what type of workers we have and what types of load we have
 
 Workers:
 1) gunicorn sync worker
-2) gunicorn async worker - gevent
-3) gevent.wsgi
+1) gunicorn async worker - gevent
+1) eventlet
+1) gevent.wsgi - NOT YET IMPLEMENTED
 
 Types of load:
 
@@ -43,4 +52,8 @@ There should be metrics of checks like this
 
 How to check?
 
-There is a tool by name Hey (simular to ApacheBench (ab).
+We need metric tfor this. I'm thinking about the following:
+
+* Stress test for 2 minutes
+* 120*5 requests with timeout of 3 secs
+* The result would be the successful requests
