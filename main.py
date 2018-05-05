@@ -40,7 +40,7 @@ class Benchmark(object):
                                                               ports={'9080/tcp': 9080})
                 logging.debug('Running docker with command: {}'.format(run_string))
                 self.is_container_alive(container)
-                result = self.stress_test()
+                result = self.stress_test()  # TODO: what stresstest tool to use?
                 # TODO: print last few lines from docker and also check if it's still alive
                 container.stop()
                 self.results[worker_class].update({load: result})
@@ -52,21 +52,20 @@ class Benchmark(object):
             return default
 
     def is_container_alive(self, container):
+        res = None
         container.reload()
         if container.status != 'running':
             raise RuntimeError('Docker {id} is not running. The logs of container is: {logs}'.
                                format(id=container.short_id, logs=container.logs()))
-        retries = 0
-        while retries < 10:
+        for retries in xrange(1, 10):
             try:
                 res = requests.get('http://127.0.0.1:9080/')
                 break
             except requests.exceptions.ConnectionError:
                 logging.info('retrying to connect to container {id}'.format(id=container.short_id))
-                retries += 1
                 continue
 
-        if not res.ok:
+        if not res and not res.ok:
             raise RuntimeError('Docker {id} did not respond to request. Logs: {logs}'.
                                format(id=container.short_id, logs=container.logs()))
     def stress_test(self):
