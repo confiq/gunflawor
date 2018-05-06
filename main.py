@@ -68,8 +68,9 @@ class Benchmark(object):
         if not res and not res.ok:
             raise RuntimeError('Docker {id} did not respond to request. Logs: {logs}'.
                                format(id=container.short_id, logs=container.logs()))
+
     def stress_test(self):
-        # TODO: We might use locust or Hey (in Go) but it's definitely
+        # TODO: BOOM!
         return 100
 
 
