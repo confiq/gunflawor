@@ -8,7 +8,7 @@ from boom import boom
 # CONFIGURATIONS:
 ## StressTest
 BOOM_REQUESTS = 1000  # Number of request that it will send to app
-BOOM_CONCURRENCY = 10
+BOOM_CONCURRENCY = 100
 
 ## misc
 GUNICORN_WORKERS = 5  # default workers when starting gunicorn
@@ -50,12 +50,13 @@ class Benchmark(object):
                            load=load, worker_class=worker_class)
                 container = self.docker_client.containers.run(self.DOCKER_IMAGE, run_string, detach=True,
                                                               ports={'9080/tcp': 9080})
-                logging.debug('Running docker with command: {}'.format(run_string))
+                log.debug('Running docker with command: {}'.format(run_string))
                 self.is_container_alive(container)
                 result = self.stress_test()  # TODO: what stresstest tool to use?
                 # TODO: print last few lines from docker and also check if it's still alive
                 container.stop()
                 self.results[worker_class].update({load: result})
+        print "{}".format(self.results)
 
     def get_custom_config(self, worker_class, config, default=None):
         if config in self.WORKER_CLASS[worker_class]:
@@ -72,10 +73,11 @@ class Benchmark(object):
             try:
                 res = requests.get('http://127.0.0.1:9080/')
                 if not res and not res.ok:
-                    logging.error('The docker did not return OK')
+                    log.error('The docker did not return OK')
                 break
             except requests.exceptions.ConnectionError:
-                logging.info('retrying to connect to container {id}'.format(id=container.short_id))
+                log.info('retrying to connect to container {id}'.format(id=container.short_id))
+                sleep(1)
                 continue
         else:
             raise RuntimeError('Docker {id} did not respond to request. Logs: {logs}'.
@@ -89,5 +91,6 @@ class Benchmark(object):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    # TODO: understand how to log logger of this file and not of requests & etcs
+    log = logging.getLogger(__name__)
     Benchmark()
