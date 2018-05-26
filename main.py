@@ -20,7 +20,7 @@ class Benchmark(object):
     # overwriting default configs
     LOADS = {
         'normal': '',
-        'cpu': '',
+        # 'cpu': '',
         # 'memory': '',
         # 'sleep': '',
         # 'slow_api': '',
@@ -29,8 +29,8 @@ class Benchmark(object):
         'sync': {
             'gunicorn_workers': GUNICORN_WORKERS * 10
         },
-        'eventlet': {},
-        'gevent': {},
+        # 'eventlet': {},
+        # 'gevent': {},
         # 'gthread',  # python3
         # 'gaiohttp'
         # TODO: gevent.wsgi
@@ -39,26 +39,29 @@ class Benchmark(object):
     def __init__(self):
         self.results = {}
         self.docker_client = docker.from_env()
-        self.main()
 
     def main(self):
         for worker_class in self.WORKER_CLASS:
             self.results[worker_class] = {}
             for load in self.LOADS:
                 run_string = 'gunicorn -b 0.0.0.0:9080 --workers={gunicorn_workers} app.{load}.app:app --worker-class={worker_class}'.\
-                    format(gunicorn_workers=self.get_custom_config(worker_class, 'gunicorn_workers', GUNICORN_WORKERS),
+                    format(gunicorn_workers=self._get_custom_config(worker_class, 'gunicorn_workers', GUNICORN_WORKERS),
                            load=load, worker_class=worker_class)
-                container = self.docker_client.containers.run(self.DOCKER_IMAGE, run_string, detach=True,
+                try:
+                    container = self.docker_client.containers.run(self.DOCKER_IMAGE, run_string, detach=True,
                                                               ports={'9080/tcp': 9080})
-                log.debug('Running docker with command: {}'.format(run_string))
+                except requests.exceptions.ConnectionError:
+                    logger.error("Is docker up?")
+                    raise
+                logger.debug('Running docker with command: {}'.format(run_string))
                 self.is_container_alive(container)
-                result = self.stress_test()  # TODO: what stresstest tool to use?
+                result = self.stress_test()
                 # TODO: print last few lines from docker and also check if it's still alive
                 container.stop()
                 self.results[worker_class].update({load: result})
         print "{}".format(self.results)
 
-    def get_custom_config(self, worker_class, config, default=None):
+    def _get_custom_config(self, worker_class, config, default=None):
         if config in self.WORKER_CLASS[worker_class]:
             return self.WORKER_CLASS[worker_class][config]
         else:
@@ -73,10 +76,10 @@ class Benchmark(object):
             try:
                 res = requests.get('http://127.0.0.1:9080/')
                 if not res and not res.ok:
-                    log.error('The docker did not return OK')
+                    logger.error('The docker did not return OK')
                 break
             except requests.exceptions.ConnectionError:
-                log.info('retrying to connect to container {id}'.format(id=container.short_id))
+                logger.info('retrying to connect to container {id}'.format(id=container.short_id))
                 sleep(1)
                 continue
         else:
@@ -91,6 +94,7 @@ class Benchmark(object):
 
 
 if __name__ == "__main__":
-    # TODO: understand how to log logger of this file and not of requests & etcs
-    log = logging.getLogger(__name__)
-    Benchmark()
+    logging.basicConfig()
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    Benchmark().main()
