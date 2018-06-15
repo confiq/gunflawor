@@ -57,3 +57,7 @@ We need metric tfor this. I'm thinking about the following:
 * Stress test for 2 minutes
 * 120*5 requests with timeout of 3 secs
 * The result would be the successful requests
+
+# Requirements
+
+* Docker daemon running
