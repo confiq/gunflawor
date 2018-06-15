@@ -1,8 +1,8 @@
 FROM ubuntu:xenial
 
-RUN apt-get update && apt-get install -y python python-pip ipython python3
+RUN apt-get update && apt-get install -y python3-pip ipython
 
-RUN pip install gunicorn gevent eventlet
+RUN pip3 install gunicorn gevent eventlet futures aiohttp==1.3.5
 COPY app /app
 
-EXPOSE 9080
+EXPOSE 9081

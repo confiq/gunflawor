@@ -1,7 +1,7 @@
 # To start... gunicorn -w XXX server1.gunicorn_syncworker:app
 from time import sleep
 
-SLEEP_TIME = 0.5
+SLEEP_TIME = 0.2
 
 def app(environ, start_response):
     data = b"Simple Data!\n"

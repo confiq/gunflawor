@@ -12,6 +12,7 @@ BOOM_CONCURRENCY = 50
 
 ## misc
 GUNICORN_WORKERS = 5  # default workers when starting gunicorn
+WORKING_PORT = 9081
 # endregion
 
 class Benchmark(object):
@@ -29,10 +30,10 @@ class Benchmark(object):
         'sync': {
             'gunicorn_workers': GUNICORN_WORKERS * 10
         },
-        # 'eventlet': {},
-        # 'gevent': {},
-        # 'gthread',  # python3
-        # 'gaiohttp'
+        'eventlet': {},
+         'gevent': {},
+        'gthread': {},
+        'gaiohttp': {}
         # TODO: gevent.wsgi
     }
 
@@ -44,12 +45,12 @@ class Benchmark(object):
         for worker_class in self.WORKER_CLASS:
             self.results[worker_class] = {}
             for load in self.LOADS:
-                run_string = 'gunicorn -b 0.0.0.0:9080 --workers={gunicorn_workers} app.{load}.app:app --worker-class={worker_class}'.\
-                    format(gunicorn_workers=self._get_custom_config(worker_class, 'gunicorn_workers', GUNICORN_WORKERS),
+                run_string = 'gunicorn -b 0.0.0.0:{port} --workers={gunicorn_workers} app.{load}.app:app --worker-class={worker_class}'.\
+                    format(port=WORKING_PORT,gunicorn_workers=self._get_custom_config(worker_class, 'gunicorn_workers', GUNICORN_WORKERS),
                            load=load, worker_class=worker_class)
                 try:
                     container = self.docker_client.containers.run(self.DOCKER_IMAGE, run_string, detach=True,
-                                                              ports={'9080/tcp': 9080})
+                                                              ports={'{}/tcp'.format(WORKING_PORT): WORKING_PORT})
                 except requests.exceptions.ConnectionError:
                     logger.error("Is docker up?")
                     raise
@@ -72,14 +73,14 @@ class Benchmark(object):
         if container.status != 'running':
             raise RuntimeError('Docker {id} is not running. The logs of container is: {logs}'.
                                format(id=container.short_id, logs=container.logs()))
-        for retries in xrange(1, 10):
+        for retries in range(1, 10):
             try:
-                res = requests.get('http://127.0.0.1:9080/')
+                res = requests.get('http://127.0.0.1:{}/'.format(WORKING_PORT))
                 if not res and not res.ok:
-                    logger.error('The docker did not return OK')
+                    logger.error('The container did not return OK code. This is probably due misconfiguration of the worker. Result: {}'.format(res.content))
                 break
             except requests.exceptions.ConnectionError:
-                logger.info('retrying to connect to container {id}'.format(id=container.short_id))
+                logger.debug('retrying to connect to container {id}'.format(id=container.short_id))
                 sleep(1)
                 continue
         else:
@@ -87,7 +88,7 @@ class Benchmark(object):
                                format(id=container.short_id, logs=container.logs()))
 
     def stress_test(self):
-        res = boom.load('http://127.0.0.1:9080/', BOOM_REQUESTS, BOOM_CONCURRENCY, None, 'GET', '', ct='text/plain',
+        res = boom.load('http://127.0.0.1:/'.format(WORKING_PORT), BOOM_REQUESTS, BOOM_CONCURRENCY, None, 'GET', '', ct='text/plain',
                         auth=None, quiet=True)
         res = boom.calc_stats(res)
         return round(res.rps, 2)
