@@ -7,8 +7,8 @@ from boom import boom
 
 # CONFIGURATIONS:
 ## StressTest
-BOOM_REQUESTS = 1000  # Number of request that it will send to app
-BOOM_CONCURRENCY = 100
+BOOM_REQUESTS = 500  # Number of request that it will send to app
+BOOM_CONCURRENCY = 50
 
 ## misc
 GUNICORN_WORKERS = 5  # default workers when starting gunicorn
@@ -20,9 +20,9 @@ class Benchmark(object):
     # overwriting default configs
     LOADS = {
         'normal': '',
-        # 'cpu': '',
-        # 'memory': '',
-        # 'sleep': '',
+        'cpu': '',
+        'memory': '',
+        'sleep': '',
         # 'slow_api': '',
     }
     WORKER_CLASS = {
