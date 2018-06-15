@@ -60,7 +60,7 @@ class Benchmark(object):
                 # TODO: print last few lines from docker and also check if it's still alive
                 container.stop()
                 self.results[worker_class].update({load: result})
-        print "{}".format(self.results)
+        print("{}".format(self.results))
 
     def _get_custom_config(self, worker_class, config, default=None):
         if config in self.WORKER_CLASS[worker_class]:
@@ -88,7 +88,7 @@ class Benchmark(object):
                                format(id=container.short_id, logs=container.logs()))
 
     def stress_test(self):
-        res = boom.load('http://127.0.0.1:/'.format(WORKING_PORT), BOOM_REQUESTS, BOOM_CONCURRENCY, None, 'GET', '', ct='text/plain',
+        res = boom.load('http://127.0.0.1:/{}'.format(WORKING_PORT), BOOM_REQUESTS, BOOM_CONCURRENCY, None, 'GET', '', ct='text/plain',
                         auth=None, quiet=True)
         res = boom.calc_stats(res)
         return round(res.rps, 2)
