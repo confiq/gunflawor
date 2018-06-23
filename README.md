@@ -61,3 +61,8 @@ We need metric tfor this. I'm thinking about the following:
 # Requirements
 
 * Docker daemon running
+
+#TODO:
+
+* Move workers_class and loads to classes with inheritance 
+* Find external slow link for `slow_api` load
