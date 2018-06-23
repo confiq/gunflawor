@@ -88,7 +88,7 @@ class Benchmark(object):
                                format(id=container.short_id, logs=container.logs()))
 
     def stress_test(self):
-        res = boom.load('http://127.0.0.1:/{}'.format(WORKING_PORT), BOOM_REQUESTS, BOOM_CONCURRENCY, None, 'GET', '', ct='text/plain',
+        res = boom.load('http://127.0.0.1:{}/'.format(WORKING_PORT), BOOM_REQUESTS, BOOM_CONCURRENCY, None, 'GET', '', ct='text/plain',
                         auth=None, quiet=True)
         res = boom.calc_stats(res)
         return round(res.rps, 2)
